@@ -130,7 +130,7 @@
 
   <view class="bottom-nav">
     <view class="nav-item" bindtap="goHome"><view class="nav-icon">⌂</view><view>工作台</view></view>
-    <view class="nav-item" bindtap="goBooking"><view class="nav-icon">▣</view><view>预约</view></view>
-    <view class="nav-item active"><view class="nav-icon">☷</view><view>管理</view></view>
+    <view class="nav-item" bindtap="goBooking"><view class="nav-icon">▣</view><view>{{currentRole === '老师' ? '我的试听' : currentRole === '家长' ? '我的预约' : '预约'}}</view></view>
+    <view class="nav-item active" wx:if="{{currentRole === '管理员'}}"><view class="nav-icon">☷</view><view>管理</view></view>
   </view>
 </view>

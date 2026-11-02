@@ -4,7 +4,17 @@
     <view class="muted">课程、人员与服务数据</view>
   </view>
 
-  <view class="tabs">
+  <view class="demo-role card">
+    <view>
+      <view class="role-label">演示当前角色</view>
+      <view class="muted">切换后返回工作台即可按该身份讲解</view>
+    </view>
+    <picker mode="selector" range="{{roleOptions}}" value="{{roleIndex}}" bindchange="changeRole">
+      <view class="role-picker">{{currentRole}} <text>⌄</text></view>
+    </picker>
+  </view>
+
+  <view class="tabs" wx:if="{{currentRole === '管理员'}}">
     <view
       wx:for="{{tabs}}"
       wx:key="key"
@@ -14,7 +24,14 @@
     >{{item.name}}</view>
   </view>
 
-  <block wx:if="{{activeTab === 'course'}}">
+  <block wx:if="{{currentRole === '家长'}}">
+    <view class="role-note card">
+      <view class="role-title">家长端暂不开放机构管理</view>
+      <view class="muted">请从“我的预约”查看自己的试听安排和进度。</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{currentRole === '管理员' && activeTab === 'course'}}">
     <view class="hint">课程管理</view>
     <view class="card course" wx:for="{{courses}}" wx:key="name">
       <view class="course-icon">{{item.icon}}</view>
@@ -43,7 +60,7 @@
     </view>
   </block>
 
-  <block wx:elif="{{activeTab === 'review'}}">
+  <block wx:elif="{{currentRole === '管理员' && activeTab === 'review'}}">
     <view class="review card" wx:for="{{reviews}}" wx:key="name">
       <view class="review-head">
         <view class="review-avatar">{{item.avatar}}</view>
@@ -57,7 +74,7 @@
     </view>
   </block>
 
-  <block wx:else>
+  <block wx:elif="{{currentRole === '管理员'}}">
     <view class="role-note card">
       <view class="role-title">当前身份：{{currentRole}}</view>
       <view class="muted">不同岗位仅可访问职责范围内的数据和操作。</view>
@@ -76,6 +93,38 @@
       <view class="permission-row"><text>管理员</text><text>全部数据与系统设置</text></view>
       <view class="permission-row"><text>前台</text><text>预约确认、到店签到</text></view>
       <view class="permission-row"><text>老师</text><text>试听记录、个人课程表</text></view>
+    </view>
+  </block>
+
+  <block wx:elif="{{currentRole === '前台'}}">
+    <view class="role-note card">
+      <view class="role-title">前台工作台</view>
+      <view class="muted">只展示今日接待任务，不开放课程、评价和员工管理。</view>
+    </view>
+    <view class="hint">今日接待</view>
+    <view class="front-item card" wx:for="{{frontAppointments}}" wx:key="id">
+      <view class="front-time">{{item.time}}</view>
+      <view class="grow"><view class="staff-name">{{item.student}}</view><view class="muted">{{item.course}} · {{item.teacher}}</view></view>
+      <view class="tag {{item.statusClass}}">{{item.statusText}}</view>
+    </view>
+    <button class="add-btn" bindtap="goBooking">进入预约与签到</button>
+  </block>
+
+  <block wx:elif="{{currentRole === '老师'}}">
+    <view class="role-note card">
+      <view class="role-title">老师工作台</view>
+      <view class="muted">只展示分配给你的试听课，不开放机构汇总数据。</view>
+    </view>
+    <view class="hint">我的试听课</view>
+    <view class="schedule card" wx:for="{{mySchedules}}" wx:key="id">
+      <view class="date-badge"><view>{{item.week}}</view><view>{{item.date}}</view></view>
+      <view class="grow"><view>{{item.time}}</view><view class="muted">{{item.course}}</view></view>
+      <view class="tag blue">{{item.statusText}}</view>
+    </view>
+    <view class="hint">待填写试听记录</view>
+    <view class="front-item card" wx:for="{{teacherTrials}}" wx:key="id">
+      <view class="grow"><view class="staff-name">{{item.student}}</view><view class="muted">{{item.course}} · {{item.time}}</view></view>
+      <button class="ghost-btn" data-id="{{item.id}}" bindtap="writeTrial">填写记录</button>
     </view>
   </block>
 

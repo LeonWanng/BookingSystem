@@ -1,22 +1,43 @@
 <view class="page">
   <view class="hero">
-    <view><view class="eyebrow">{{today}} · 门店工作台</view><view class="hello">早上好，{{staffName}}</view><view class="muted">今天也要让每一次试听都被认真对待</view></view>
-    <view class="avatar">{{avatarText}}</view>
+    <view><view class="eyebrow">{{today}} · {{currentRole}}演示</view><view class="hello">早上好，{{staffName}}</view><view class="muted">今天也要让每一次试听都被认真对待</view></view>
+    <picker class="role-switch" mode="selector" range="{{roleOptions}}" value="{{roleIndex}}" bindchange="changeRole">
+      <view class="avatar-wrap"><view class="avatar">{{avatarText}}</view><view class="role-switch-text">切换角色</view></view>
+    </picker>
   </view>
-  <view class="stats card">
+  <view class="stats card" wx:if="{{currentRole === '管理员'}}">
     <view class="stat"><view class="stat-num blue-text">{{stats.today}}</view><view class="muted">今日预约</view></view>
     <view class="stat"><view class="stat-num orange-text">{{stats.waiting}}</view><view class="muted">待确认</view></view>
     <view class="stat"><view class="stat-num green-text">{{stats.checked}}</view><view class="muted">已到店</view></view>
     <view class="stat"><view class="stat-num">{{stats.rate}}%</view><view class="muted">转化率</view></view>
   </view>
-  <view class="section-title">快捷操作</view>
-  <view class="quick-grid">
+  <view class="stats card parent-stats" wx:if="{{currentRole === '家长'}}">
+    <view class="stat"><view class="stat-num blue-text">{{parentStats.total}}</view><view class="muted">我的预约</view></view>
+    <view class="stat"><view class="stat-num orange-text">{{parentStats.waiting}}</view><view class="muted">待确认</view></view>
+    <view class="stat"><view class="stat-num green-text">{{parentStats.finished}}</view><view class="muted">已完成</view></view>
+  </view>
+  <view class="stats card" wx:if="{{currentRole === '前台'}}">
+    <view class="stat"><view class="stat-num blue-text">3</view><view class="muted">今日接待</view></view>
+    <view class="stat"><view class="stat-num orange-text">1</view><view class="muted">待确认</view></view>
+    <view class="stat"><view class="stat-num green-text">1</view><view class="muted">待签到</view></view>
+  </view>
+  <view class="stats card" wx:if="{{currentRole === '老师'}}">
+    <view class="stat"><view class="stat-num blue-text">2</view><view class="muted">我的试听</view></view>
+    <view class="stat"><view class="stat-num orange-text">1</view><view class="muted">待填记录</view></view>
+    <view class="stat"><view class="stat-num green-text">0</view><view class="muted">今日完成</view></view>
+  </view>
+  <view class="section-title">{{currentRole === '家长' ? '我的服务' : '快捷操作'}}</view>
+  <view class="quick-grid" wx:if="{{currentRole !== '家长'}}">
     <view class="quick card" bindtap="goBooking"><view class="quick-icon purple">＋</view><view class="quick-name">预约试听</view><view class="muted">新建客户预约</view></view>
     <view class="quick card" bindtap="goCheckin"><view class="quick-icon green">✓</view><view class="quick-name">到店签到</view><view class="muted">确认客户到店</view></view>
-    <view class="quick card" bindtap="goAdmin"><view class="quick-icon orange">▦</view><view class="quick-name">课程与时间</view><view class="muted">管理可约时段</view></view>
-    <view class="quick card" bindtap="goAdmin"><view class="quick-icon blue">♙</view><view class="quick-name">人员权限</view><view class="muted">员工与角色</view></view>
+    <view class="quick card" wx:if="{{currentRole === '管理员'}}" bindtap="goAdmin"><view class="quick-icon orange">▦</view><view class="quick-name">课程与时间</view><view class="muted">管理可约时段</view></view>
+    <view class="quick card" wx:if="{{currentRole === '管理员'}}" bindtap="goAdmin"><view class="quick-icon blue">♙</view><view class="quick-name">人员权限</view><view class="muted">员工与角色</view></view>
   </view>
-  <view class="section-title">今日预约 <text class="section-more" bindtap="goBooking">查看全部 ›</text></view>
+  <view class="quick-grid parent-quick" wx:else>
+    <view class="quick card" bindtap="goBooking"><view class="quick-icon purple">＋</view><view class="quick-name">预约试听</view><view class="muted">选择课程和时间</view></view>
+    <view class="quick card" bindtap="goBooking"><view class="quick-icon blue">▣</view><view class="quick-name">我的预约</view><view class="muted">查看预约进度</view></view>
+  </view>
+  <view class="section-title">{{currentRole === '家长' ? '我的预约' : '今日预约'}} <text class="section-more" bindtap="goBooking">查看全部 ›</text></view>
   <view class="appointment-list card">
     <view class="empty" wx:if="{{!appointments.length}}">今天还没有预约</view>
     <view class="appointment" wx:for="{{appointments}}" wx:key="id">
@@ -25,5 +46,5 @@
       <view class="tag {{item.statusClass}}">{{item.statusText}}</view>
     </view>
   </view>
-  <view class="bottom-nav"><view class="nav-item active"><view class="nav-icon">⌂</view><view>工作台</view></view><view class="nav-item" bindtap="goBooking"><view class="nav-icon">▣</view><view>预约</view></view><view class="nav-item" bindtap="goAdmin"><view class="nav-icon">☷</view><view>管理</view></view></view>
+  <view class="bottom-nav"><view class="nav-item active"><view class="nav-icon">⌂</view><view>工作台</view></view><view class="nav-item" bindtap="goBooking"><view class="nav-icon">▣</view><view>{{currentRole === '家长' ? '我的预约' : '预约'}}</view></view><view class="nav-item" wx:if="{{currentRole !== '家长'}}" bindtap="goAdmin"><view class="nav-icon">☷</view><view>管理</view></view></view>
 </view>

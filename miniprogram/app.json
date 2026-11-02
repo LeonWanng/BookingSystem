@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/booking/index", "pages/admin/index"],
+  "pages": ["pages/index/index", "pages/booking/index", "pages/admin/index", "pages/appointment-detail/index"],
   "window": {
     "backgroundColor": "#f5f7fb",
     "navigationBarBackgroundColor": "#ffffff",

@@ -66,6 +66,16 @@ Page({
       })
       .catch(() => {})
   },
+  openBooking(e) {
+    const filter = e.currentTarget.dataset.filter || 'all'
+    wx.navigateTo({ url: '/pages/booking/index?filter=' + filter })
+  },
+  openAppointment(e) {
+    const appointment = this.data.appointments.find(item => item.id === e.currentTarget.dataset.id)
+    if (!appointment) return
+    wx.setStorageSync('selectedAppointment', appointment)
+    wx.navigateTo({ url: '/pages/appointment-detail/index' })
+  },
   goBooking() { wx.navigateTo({ url: '/pages/booking/index' }) },
   goAdmin() { wx.navigateTo({ url: '/pages/admin/index' }) },
   goCheckin() { wx.navigateTo({ url: '/pages/booking/index?mode=checkin' }) }

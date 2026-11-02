@@ -6,25 +6,25 @@
     </picker>
   </view>
   <view class="stats card" wx:if="{{currentRole === '管理员'}}">
-    <view class="stat"><view class="stat-num blue-text">{{stats.today}}</view><view class="muted">今日预约</view></view>
-    <view class="stat"><view class="stat-num orange-text">{{stats.waiting}}</view><view class="muted">待确认</view></view>
-    <view class="stat"><view class="stat-num green-text">{{stats.checked}}</view><view class="muted">已到店</view></view>
-    <view class="stat"><view class="stat-num">{{stats.rate}}%</view><view class="muted">转化率</view></view>
+    <view class="stat" data-filter="all" bindtap="openBooking"><view class="stat-num blue-text">{{stats.today}}</view><view class="muted">今日预约</view></view>
+    <view class="stat" data-filter="waiting" bindtap="openBooking"><view class="stat-num orange-text">{{stats.waiting}}</view><view class="muted">待确认</view></view>
+    <view class="stat" data-filter="checked" bindtap="openBooking"><view class="stat-num green-text">{{stats.checked}}</view><view class="muted">已到店</view></view>
+    <view class="stat" data-filter="finished" bindtap="openBooking"><view class="stat-num">{{stats.rate}}%</view><view class="muted">转化率</view></view>
   </view>
   <view class="stats card parent-stats" wx:if="{{currentRole === '家长'}}">
-    <view class="stat"><view class="stat-num blue-text">{{parentStats.total}}</view><view class="muted">我的预约</view></view>
-    <view class="stat"><view class="stat-num orange-text">{{parentStats.waiting}}</view><view class="muted">待确认</view></view>
-    <view class="stat"><view class="stat-num green-text">{{parentStats.finished}}</view><view class="muted">已完成</view></view>
+    <view class="stat" data-filter="all" bindtap="openBooking"><view class="stat-num blue-text">{{parentStats.total}}</view><view class="muted">我的预约</view></view>
+    <view class="stat" data-filter="waiting" bindtap="openBooking"><view class="stat-num orange-text">{{parentStats.waiting}}</view><view class="muted">待确认</view></view>
+    <view class="stat" data-filter="finished" bindtap="openBooking"><view class="stat-num green-text">{{parentStats.finished}}</view><view class="muted">已完成</view></view>
   </view>
   <view class="stats card" wx:if="{{currentRole === '前台'}}">
-    <view class="stat"><view class="stat-num blue-text">3</view><view class="muted">今日接待</view></view>
-    <view class="stat"><view class="stat-num orange-text">1</view><view class="muted">待确认</view></view>
-    <view class="stat"><view class="stat-num green-text">1</view><view class="muted">待签到</view></view>
+    <view class="stat" data-filter="all" bindtap="openBooking"><view class="stat-num blue-text">3</view><view class="muted">今日接待</view></view>
+    <view class="stat" data-filter="waiting" bindtap="openBooking"><view class="stat-num orange-text">1</view><view class="muted">待确认</view></view>
+    <view class="stat" data-filter="checked" bindtap="openBooking"><view class="stat-num green-text">1</view><view class="muted">待签到</view></view>
   </view>
   <view class="stats card" wx:if="{{currentRole === '老师'}}">
-    <view class="stat"><view class="stat-num blue-text">2</view><view class="muted">我的试听</view></view>
-    <view class="stat"><view class="stat-num orange-text">1</view><view class="muted">待填记录</view></view>
-    <view class="stat"><view class="stat-num green-text">0</view><view class="muted">今日完成</view></view>
+    <view class="stat" data-filter="all" bindtap="openBooking"><view class="stat-num blue-text">2</view><view class="muted">我的试听</view></view>
+    <view class="stat" data-filter="checked" bindtap="openBooking"><view class="stat-num orange-text">1</view><view class="muted">待填记录</view></view>
+    <view class="stat" data-filter="finished" bindtap="openBooking"><view class="stat-num green-text">0</view><view class="muted">今日完成</view></view>
   </view>
   <view class="section-title">{{currentRole === '家长' ? '我的服务' : '快捷操作'}}</view>
   <view class="quick-grid" wx:if="{{currentRole !== '家长'}}">
@@ -40,7 +40,7 @@
   <view class="section-title">{{currentRole === '家长' ? '我的预约' : '今日预约'}} <text class="section-more" bindtap="goBooking">查看全部 ›</text></view>
   <view class="appointment-list card">
     <view class="empty" wx:if="{{!appointments.length}}">今天还没有预约</view>
-    <view class="appointment" wx:for="{{appointments}}" wx:key="id">
+    <view class="appointment" wx:for="{{appointments}}" wx:key="id" data-id="{{item.id}}" bindtap="openAppointment">
       <view class="time">{{item.time}}</view>
       <view class="appointment-main"><view class="name">{{item.student}} <text class="muted">· {{item.age}}岁</text></view><view class="muted">{{item.course}} · {{item.teacher}}</view></view>
       <view class="tag {{item.statusClass}}">{{item.statusText}}</view>

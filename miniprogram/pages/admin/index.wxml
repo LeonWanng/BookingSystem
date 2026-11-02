@@ -1,0 +1,87 @@
+<view class="page">
+  <view class="admin-head">
+    <view class="title">机构管理</view>
+    <view class="muted">课程、人员与服务数据</view>
+  </view>
+
+  <view class="tabs">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tab {{activeTab === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >{{item.name}}</view>
+  </view>
+
+  <block wx:if="{{activeTab === 'course'}}">
+    <view class="hint">课程管理</view>
+    <view class="card course" wx:for="{{courses}}" wx:key="name">
+      <view class="course-icon">{{item.icon}}</view>
+      <view class="grow">
+        <view class="course-name">{{item.name}}</view>
+        <view class="muted">{{item.duration}} · {{item.teacher}}</view>
+      </view>
+      <view>
+        <view class="tag green">上架中</view>
+        <view class="slots">{{item.slots}} 个可约时段</view>
+      </view>
+    </view>
+    <button class="add-btn" bindtap="addCourse">＋ 添加课程</button>
+
+    <view class="hint">可预约时间段</view>
+    <view class="schedule card" wx:for="{{schedules}}" wx:key="id">
+      <view class="date-badge">
+        <view>{{item.week}}</view>
+        <view>{{item.date}}</view>
+      </view>
+      <view class="grow">
+        <view>{{item.time}}</view>
+        <view class="muted">{{item.course}} · {{item.teacher}}</view>
+      </view>
+      <view class="tag blue">余 {{item.remaining}}</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeTab === 'review'}}">
+    <view class="review card" wx:for="{{reviews}}" wx:key="name">
+      <view class="review-head">
+        <view class="review-avatar">{{item.avatar}}</view>
+        <view class="grow">
+          <view>{{item.name}} <text class="muted">· {{item.course}}</text></view>
+          <view class="stars">★★★★★</view>
+        </view>
+      </view>
+      <view class="review-text">{{item.content}}</view>
+      <view class="muted">{{item.date}} · {{item.status}}</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="role-note card">
+      <view class="role-title">当前身份：{{currentRole}}</view>
+      <view class="muted">不同岗位仅可访问职责范围内的数据和操作。</view>
+    </view>
+    <view class="staff card" wx:for="{{staffs}}" wx:key="name">
+      <view class="staff-avatar">{{item.avatar}}</view>
+      <view class="grow">
+        <view class="staff-name">{{item.name}} <text class="tag blue">{{item.role}}</text></view>
+        <view class="muted">{{item.phone}} · {{item.skills}}</view>
+      </view>
+      <switch checked="{{item.enabled}}" color="#4d6bfe" data-index="{{index}}" bindchange="toggleStaff" />
+    </view>
+    <button class="add-btn" bindtap="addStaff">＋ 添加员工</button>
+    <view class="permission card">
+      <view class="permission-title">角色权限</view>
+      <view class="permission-row"><text>管理员</text><text>全部数据与系统设置</text></view>
+      <view class="permission-row"><text>前台</text><text>预约确认、到店签到</text></view>
+      <view class="permission-row"><text>老师</text><text>试听记录、个人课程表</text></view>
+    </view>
+  </block>
+
+  <view class="bottom-nav">
+    <view class="nav-item" bindtap="goHome"><view class="nav-icon">⌂</view><view>工作台</view></view>
+    <view class="nav-item" bindtap="goBooking"><view class="nav-icon">▣</view><view>预约</view></view>
+    <view class="nav-item active"><view class="nav-icon">☷</view><view>管理</view></view>
+  </view>
+</view>

@@ -1,29 +1,29 @@
-<!--index.wxml-->
-<view class="container">
-  <view class="title">快速了解云开发</view>
-  <view class="top_tip">免鉴权接口调用 免部署后台 高并发</view>
-  <view class="power" wx:key="title" wx:for="{{powerList}}" wx:for-item="power">
-    <view class="power_info" data-index="{{index}}" data-type="{{ power.type }}" bindtap="onClickPowerInfo">
-      <view class="power_info_text">
-        <view class="power_info_text_title">
-          {{power.title}}
-          <view class="power_info_text_tag" wx:if="{{power.tag}}">{{power.tag}}</view>
-        </view>
-        <view class="power_info_text_tip">{{power.tip}}</view>
-      </view>
-      <image wx:if="{{!power.showItem && power.item.length}}" class="power_info_more" src="../../images/arrow.svg"></image>
-      <image wx:if="{{power.showItem && power.item.length}}" class="power_info_less" src="../../images/arrow.svg"></image>
-      <image wx:if="{{!power.item.length}}" class="power_item_icon" src="../../images/arrow.svg"></image>
-    </view>
-    <view wx:if="{{power.showItem}}">
-      <view wx:key="title" wx:for="{{power.item}}">
-        <view class="line"></view>
-        <view class="power_item" bindtap="jumpPage" data-type="{{ item.type }}" data-page="{{item.page}}">
-          <view class="power_item_title">{{item.title}}</view>
-          <image class="power_item_icon" src="../../images/arrow.svg"></image>
-        </view>
-      </view>
+<view class="page">
+  <view class="hero">
+    <view><view class="eyebrow">{{today}} · 门店工作台</view><view class="hello">早上好，{{staffName}}</view><view class="muted">今天也要让每一次试听都被认真对待</view></view>
+    <view class="avatar">{{avatarText}}</view>
+  </view>
+  <view class="stats card">
+    <view class="stat"><view class="stat-num blue-text">{{stats.today}}</view><view class="muted">今日预约</view></view>
+    <view class="stat"><view class="stat-num orange-text">{{stats.waiting}}</view><view class="muted">待确认</view></view>
+    <view class="stat"><view class="stat-num green-text">{{stats.checked}}</view><view class="muted">已到店</view></view>
+    <view class="stat"><view class="stat-num">{{stats.rate}}%</view><view class="muted">转化率</view></view>
+  </view>
+  <view class="section-title">快捷操作</view>
+  <view class="quick-grid">
+    <view class="quick card" bindtap="goBooking"><view class="quick-icon purple">＋</view><view class="quick-name">预约试听</view><view class="muted">新建客户预约</view></view>
+    <view class="quick card" bindtap="goCheckin"><view class="quick-icon green">✓</view><view class="quick-name">到店签到</view><view class="muted">确认客户到店</view></view>
+    <view class="quick card" bindtap="goAdmin"><view class="quick-icon orange">▦</view><view class="quick-name">课程与时间</view><view class="muted">管理可约时段</view></view>
+    <view class="quick card" bindtap="goAdmin"><view class="quick-icon blue">♙</view><view class="quick-name">人员权限</view><view class="muted">员工与角色</view></view>
+  </view>
+  <view class="section-title">今日预约 <text class="section-more" bindtap="goBooking">查看全部 ›</text></view>
+  <view class="appointment-list card">
+    <view class="empty" wx:if="{{!appointments.length}}">今天还没有预约</view>
+    <view class="appointment" wx:for="{{appointments}}" wx:key="id">
+      <view class="time">{{item.time}}</view>
+      <view class="appointment-main"><view class="name">{{item.student}} <text class="muted">· {{item.age}}岁</text></view><view class="muted">{{item.course}} · {{item.teacher}}</view></view>
+      <view class="tag {{item.statusClass}}">{{item.statusText}}</view>
     </view>
   </view>
-  <cloud-tip-modal showTipProps="{{showTip}}" title="{{title}}" content="{{content}}"></cloud-tip-modal>
+  <view class="bottom-nav"><view class="nav-item active"><view class="nav-icon">⌂</view><view>工作台</view></view><view class="nav-item" bindtap="goBooking"><view class="nav-icon">▣</view><view>预约</view></view><view class="nav-item" bindtap="goAdmin"><view class="nav-icon">☷</view><view>管理</view></view></view>
 </view>

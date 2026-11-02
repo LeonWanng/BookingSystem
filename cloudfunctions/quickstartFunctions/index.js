@@ -157,6 +157,79 @@ const deleteRecord = async (event) => {
   }
 };
 
+// 试听机构业务数据：客户端只调用云函数，避免直接暴露数据库写权限。
+const getAppointments = async () => {
+  try {
+    const result = await db.collection("appointments").orderBy("createdAt", "desc").limit(100).get();
+    return { success: true, data: result.data.map(formatAppointment) };
+  } catch (err) {
+    // 新环境还未创建集合时保持可用，前端会展示本地演示数据。
+    return { success: false, errMsg: err.message };
+  }
+};
+
+const formatAppointment = (item) => ({
+  ...item,
+  id: item._id,
+  date: item.date || "待定",
+  statusText: item.statusText || "待确认",
+  statusClass: item.statusClass || "orange",
+});
+
+const createAppointment = async (event) => {
+  const appointment = event.appointment || {};
+  if (!appointment.student || !appointment.course || !appointment.time) {
+    return { success: false, errMsg: "缺少预约必要信息" };
+  }
+  const { OPENID } = cloud.getWXContext();
+  const result = await db.collection("appointments").add({
+    data: {
+      student: appointment.student,
+      age: Number(appointment.age) || 0,
+      phone: appointment.phone || "",
+      course: appointment.course,
+      date: appointment.date || "待定",
+      time: appointment.time,
+      teacher: appointment.teacher || "待分配",
+      statusText: "待确认",
+      statusClass: "orange",
+      createdBy: OPENID,
+      createdAt: db.serverDate(),
+      updatedAt: db.serverDate(),
+    },
+  });
+  return { success: true, data: { id: result._id } };
+};
+
+const updateAppointment = async (event) => {
+  if (!event.id || !event.statusText) return { success: false, errMsg: "缺少更新参数" };
+  const statusClass = { "待确认": "orange", "已确认": "blue", "已到店": "green", "已完成": "gray" }[event.statusText] || "gray";
+  await db.collection("appointments").doc(event.id).update({
+    data: { statusText: event.statusText, statusClass, updatedAt: db.serverDate() },
+  });
+  return { success: true };
+};
+
+const getDashboard = async () => {
+  const appointments = await getAppointments();
+  if (!appointments.success) return appointments;
+  const list = appointments.data;
+  const checked = list.filter((item) => item.statusText === "已到店").length;
+  const finished = list.filter((item) => item.statusText === "已完成").length;
+  return {
+    success: true,
+    data: {
+      appointments: list.slice(0, 5),
+      stats: {
+        today: list.length,
+        waiting: list.filter((item) => item.statusText === "待确认").length,
+        checked,
+        rate: checked + finished ? Math.round((finished / (checked + finished)) * 100) : 0,
+      },
+    },
+  };
+};
+
 // const getOpenId = require('./getOpenId/index');
 // const getMiniProgramCode = require('./getMiniProgramCode/index');
 // const createCollection = require('./createCollection/index');
@@ -181,5 +254,13 @@ exports.main = async (event, context) => {
       return await insertRecord(event);
     case "deleteRecord":
       return await deleteRecord(event);
+    case "getAppointments":
+      return await getAppointments();
+    case "createAppointment":
+      return await createAppointment(event);
+    case "updateAppointment":
+      return await updateAppointment(event);
+    case "getDashboard":
+      return await getDashboard();
   }
 };

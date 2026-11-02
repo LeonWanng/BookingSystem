@@ -1,27 +1,20 @@
-/**app.wxss**/
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-} 
-
-button {
-  background: initial;
-}
-
-button:focus{
-  outline: 0;
-}
-
-button::after{
-  border: none;
-}
-
-
-page {
-  background: #f6f6f6;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
+page { background: #f5f7fb; color: #172033; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+view, text { box-sizing: border-box; }
+button::after { border: 0; }
+.page { min-height: 100vh; padding: 32rpx 32rpx 150rpx; }
+.muted { color: #8892a4; }
+.card { background: #fff; border-radius: 22rpx; padding: 28rpx; box-shadow: 0 8rpx 28rpx rgba(40, 55, 85, .05); }
+.section-title { display: flex; justify-content: space-between; align-items: center; margin: 38rpx 0 20rpx; font-size: 32rpx; font-weight: 700; }
+.section-more { font-size: 24rpx; color: #4d6bfe; font-weight: 400; }
+.primary-btn { background: #4d6bfe; color: #fff; border-radius: 14rpx; font-size: 27rpx; line-height: 76rpx; height: 76rpx; padding: 0 28rpx; }
+.ghost-btn { background: #f0f3ff; color: #4d6bfe; border-radius: 12rpx; font-size: 24rpx; line-height: 60rpx; height: 60rpx; padding: 0 22rpx; }
+.danger-btn { background: #fff0f0; color: #e15c64; }
+.bottom-nav { position: fixed; z-index: 10; bottom: 0; left: 0; right: 0; height: 116rpx; padding-bottom: env(safe-area-inset-bottom); background: rgba(255,255,255,.96); display: flex; border-top: 1rpx solid #edf0f6; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9aa3b2; font-size: 22rpx; gap: 7rpx; }
+.nav-item.active { color: #4d6bfe; font-weight: 600; }
+.nav-icon { font-size: 38rpx; line-height: 38rpx; }
+.tag { display: inline-flex; align-items: center; padding: 6rpx 14rpx; border-radius: 20rpx; font-size: 21rpx; }
+.tag.blue { color: #4d6bfe; background: #eef1ff; }
+.tag.green { color: #20a36a; background: #e9f8f0; }
+.tag.orange { color: #d98525; background: #fff5e6; }
+.tag.gray { color: #8c95a4; background: #f1f3f6; }

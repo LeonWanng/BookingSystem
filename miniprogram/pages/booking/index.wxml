@@ -1,0 +1,18 @@
+<view class="page">
+  <view class="booking-head"><view><view class="title">预约试听</view><view class="muted">共 {{appointments.length}} 条预约 · {{mode === 'checkin' ? '到店签到模式' : '本周安排'}}</view></view><button class="primary-btn" bindtap="toggleForm">{{showForm ? '收起' : '＋ 新预约'}}</button></view>
+  <view class="filters"><view class="filter active">全部</view><view class="filter">待确认 <text class="count">{{waitingCount}}</text></view><view class="filter">已到店</view><view class="filter">已完成</view></view>
+  <view class="form card" wx:if="{{showForm}}">
+    <view class="form-title">新建试听预约</view>
+    <input class="input" placeholder="学员姓名" value="{{form.student}}" data-field="student" bindinput="inputChange" />
+    <view class="row"><input class="input half" placeholder="年龄" type="number" value="{{form.age}}" data-field="age" bindinput="inputChange" /><input class="input half" placeholder="家长手机号" type="number" value="{{form.phone}}" data-field="phone" bindinput="inputChange" /></view>
+    <picker class="picker" mode="selector" range="{{courses}}" bindchange="courseChange"><view>{{form.course || '选择试听课程'}} <text>⌄</text></view></picker>
+    <picker class="picker" mode="time" bindchange="timeChange"><view>{{form.time || '选择到店时间'}} <text>⌄</text></view></picker>
+    <button class="primary-btn submit" bindtap="submitBooking">确认预约</button>
+  </view>
+  <view class="booking-card card" wx:for="{{appointments}}" wx:key="id">
+    <view class="booking-top"><view><view class="student">{{item.student}} <text class="age">{{item.age}}岁</text></view><view class="muted">{{item.phone}}</view></view><view class="tag {{item.statusClass}}">{{item.statusText}}</view></view>
+    <view class="booking-info"><view class="info-block"><view class="label">试听课程</view><view>{{item.course}}</view></view><view class="info-block"><view class="label">到店时间</view><view>{{item.date}} {{item.time}}</view></view></view>
+    <view class="booking-foot"><view class="muted">接待：{{item.teacher}}</view><view><button class="ghost-btn" wx:if="{{item.statusText === '待确认'}}" data-id="{{item.id}}" bindtap="confirmBooking">确认预约</button><button class="ghost-btn" wx:if="{{item.statusText === '已确认'}}" data-id="{{item.id}}" bindtap="checkin">到店签到</button><button class="ghost-btn" wx:if="{{item.statusText === '已到店'}}" data-id="{{item.id}}" bindtap="finish">填写试听记录</button></view></view>
+  </view>
+  <view class="bottom-nav"><view class="nav-item" bindtap="goHome"><view class="nav-icon">⌂</view><view>工作台</view></view><view class="nav-item active"><view class="nav-icon">▣</view><view>预约</view></view><view class="nav-item" bindtap="goAdmin"><view class="nav-icon">☷</view><view>管理</view></view></view>
+</view>

@@ -1,6 +1,12 @@
 Page({
   data: {
     activeTab: 'course',
+    showCourseForm: false,
+    showStaffForm: false,
+    staffRoles: ['管理员', '老师', '前台'],
+    staffRoleIndex: 1,
+    courseForm: { name: '', duration: '', teacher: '', slots: '' },
+    staffForm: { name: '', role: '老师', phone: '', skills: '' },
     currentRole: '管理员',
     roleIndex: 0,
     roleOptions: ['管理员', '前台', '老师', '家长'],
@@ -37,10 +43,28 @@ Page({
       { id: 'tr1', student: '林小满', course: '少儿美术启蒙', time: '今天 09:30' }
     ]
   },
-  onLoad() {
+  onLoad(options) {
     const savedRole = wx.getStorageSync('demoRole') || '管理员';
     const roleIndex = this.data.roleOptions.indexOf(savedRole);
-    this.setData({ currentRole: savedRole, roleIndex: roleIndex < 0 ? 0 : roleIndex });
+    const storedTab = wx.getStorageSync('adminTab');
+    const requestedTab = options && ['course', 'review', 'staff'].indexOf(options.tab) >= 0 ? options.tab : ['course', 'review', 'staff'].indexOf(storedTab) >= 0 ? storedTab : 'course';
+    const courses = wx.getStorageSync('adminCourses') || this.data.courses;
+    const staffs = wx.getStorageSync('adminStaffs') || this.data.staffs;
+    this.setData({ currentRole: savedRole, roleIndex: roleIndex < 0 ? 0 : roleIndex, activeTab: requestedTab, courses, staffs });
+    wx.removeStorageSync('adminTab');
+  },
+  onShow() {
+    const storedTab = wx.getStorageSync('adminTab');
+    if (['course', 'review', 'staff'].indexOf(storedTab) >= 0) {
+      this.setData({ activeTab: storedTab });
+      wx.removeStorageSync('adminTab');
+    }
+    const role = wx.getStorageSync('demoRole') || '管理员';
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) {
+      tabBar.refreshRole();
+      tabBar.setSelected(role === '管理员' ? 2 : 0);
+    }
   },
   switchTab(e) { this.setData({ activeTab: e.currentTarget.dataset.key }) },
   changeRole(e) {
@@ -48,19 +72,57 @@ Page({
     const currentRole = this.data.roleOptions[roleIndex];
     wx.setStorageSync('demoRole', currentRole);
     this.setData({ currentRole, roleIndex, activeTab: 'course' });
+    const tabBar = this.getTabBar && this.getTabBar();
+    if (tabBar) {
+      tabBar.refreshRole();
+      tabBar.setSelected(currentRole === '管理员' ? 2 : 0);
+    }
     wx.showToast({ title: '已切换为' + currentRole, icon: 'none' });
   },
   toggleStaff(e) {
     const staffs = this.data.staffs;
     staffs[e.currentTarget.dataset.index].enabled = e.detail.value;
     this.setData({ staffs });
+    wx.setStorageSync('adminStaffs', staffs);
     wx.showToast({ title: e.detail.value ? '已启用' : '已停用', icon: 'none' });
   },
-  addCourse() { wx.showToast({ title: '课程编辑入口', icon: 'none' }) },
-  addStaff() { wx.showToast({ title: '员工添加入口', icon: 'none' }) },
+  toggleCourseForm() { this.setData({ showCourseForm: !this.data.showCourseForm, showStaffForm: false }); },
+  toggleStaffForm() { this.setData({ showStaffForm: !this.data.showStaffForm, showCourseForm: false }); },
+  courseInput(e) { this.setData({ ['courseForm.' + e.currentTarget.dataset.field]: e.detail.value }); },
+  staffInput(e) { this.setData({ ['staffForm.' + e.currentTarget.dataset.field]: e.detail.value }); },
+  staffRoleChange(e) {
+    const staffRoleIndex = Number(e.detail.value);
+    this.setData({ staffRoleIndex, 'staffForm.role': this.data.staffRoles[staffRoleIndex] });
+  },
+  submitCourse() {
+    const form = this.data.courseForm;
+    const duration = Number(form.duration);
+    const slots = Number(form.slots);
+    if (!form.name.trim() || !duration || !form.teacher.trim() || !slots) {
+      wx.showToast({ title: '请补充完整课程信息', icon: 'none' });
+      return;
+    }
+    const course = { name: form.name.trim(), icon: '✦', duration: duration + '分钟', teacher: form.teacher.trim(), slots };
+    const courses = [...this.data.courses, course];
+    this.setData({ courses, showCourseForm: false, courseForm: { name: '', duration: '', teacher: '', slots: '' } });
+    wx.setStorageSync('adminCourses', courses);
+    wx.showToast({ title: '课程已添加' });
+  },
+  submitStaff() {
+    const form = this.data.staffForm;
+    if (!form.name.trim() || !form.phone.trim() || !form.skills.trim()) {
+      wx.showToast({ title: '请补充完整员工信息', icon: 'none' });
+      return;
+    }
+    const staff = { name: form.name.trim(), avatar: form.name.trim().slice(0, 1), role: form.role, phone: form.phone.trim(), skills: form.skills.trim(), enabled: true };
+    const staffs = [...this.data.staffs, staff];
+    this.setData({ staffs, showStaffForm: false, staffRoleIndex: 1, staffForm: { name: '', role: '老师', phone: '', skills: '' } });
+    wx.setStorageSync('adminStaffs', staffs);
+    wx.showToast({ title: '员工已添加' });
+  },
   writeTrial() {
     wx.showModal({ title: '试听记录', editable: true, placeholderText: '填写学员表现与建议', success: res => { if (res.confirm) wx.showToast({ title: '记录已保存' }) } });
   },
-  goHome() { wx.navigateBack({ delta: 1 }) },
-  goBooking() { wx.navigateTo({ url: '/pages/booking/index' }) }
+  goHome() { wx.switchTab({ url: '/pages/index/index' }) },
+  goBooking() { wx.switchTab({ url: '/pages/booking/index' }) }
 })

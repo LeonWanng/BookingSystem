@@ -6,6 +6,23 @@
     "navigationBarTitleText": "栖课 · 试听管理",
     "navigationBarTextStyle": "black"
   },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "工作台"
+      },
+      {
+        "pagePath": "pages/booking/index",
+        "text": "预约"
+      },
+      {
+        "pagePath": "pages/admin/index",
+        "text": "管理"
+      }
+    ]
+  },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents"

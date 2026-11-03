@@ -1,1 +1,1 @@
-Page({ data:{appointment:null}, onLoad(){this.setData({appointment:wx.getStorageSync('selectedAppointment')||null})}, goBooking(){wx.navigateBack({delta:1})} })
+Page({ data:{appointment:null}, onLoad(){this.setData({appointment:wx.getStorageSync('selectedAppointment')||null})}, goBooking(){wx.setStorageSync('bookingFilter','all'); wx.removeStorageSync('bookingMode'); wx.switchTab({url:'/pages/booking/index'})} })

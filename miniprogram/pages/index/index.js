@@ -37,6 +37,14 @@ Page({
   },
   onShow() {
     this.applyDemoRole()
+    this.syncTabBar(0)
+  },
+  syncTabBar(selected) {
+    const tabBar = this.getTabBar && this.getTabBar()
+    if (tabBar) {
+      tabBar.refreshRole()
+      tabBar.setSelected(selected)
+    }
   },
   applyDemoRole() {
     const currentRole = wx.getStorageSync('demoRole') || '管理员'
@@ -54,6 +62,7 @@ Page({
     const currentRole = this.data.roleOptions[roleIndex]
     wx.setStorageSync('demoRole', currentRole)
     this.applyDemoRole()
+    this.syncTabBar(0)
     wx.showToast({ title: '已切换为' + currentRole, icon: 'none' })
   },
   loadDashboard() {
@@ -68,7 +77,9 @@ Page({
   },
   openBooking(e) {
     const filter = e.currentTarget.dataset.filter || 'all'
-    wx.navigateTo({ url: '/pages/booking/index?filter=' + filter })
+    wx.setStorageSync('bookingFilter', filter)
+    wx.removeStorageSync('bookingMode')
+    wx.switchTab({ url: '/pages/booking/index' })
   },
   openAppointment(e) {
     const appointment = this.data.appointments.find(item => item.id === e.currentTarget.dataset.id)
@@ -76,7 +87,19 @@ Page({
     wx.setStorageSync('selectedAppointment', appointment)
     wx.navigateTo({ url: '/pages/appointment-detail/index' })
   },
-  goBooking() { wx.navigateTo({ url: '/pages/booking/index' }) },
-  goAdmin() { wx.navigateTo({ url: '/pages/admin/index' }) },
-  goCheckin() { wx.navigateTo({ url: '/pages/booking/index?mode=checkin' }) }
+  goBooking() {
+    wx.setStorageSync('bookingFilter', 'all')
+    wx.removeStorageSync('bookingMode')
+    wx.switchTab({ url: '/pages/booking/index' })
+  },
+  goAdmin(e) {
+    const tab = e && e.currentTarget.dataset.adminTab || 'course'
+    wx.setStorageSync('adminTab', tab)
+    wx.switchTab({ url: '/pages/admin/index' })
+  },
+  goCheckin() {
+    wx.setStorageSync('bookingFilter', 'all')
+    wx.setStorageSync('bookingMode', 'checkin')
+    wx.switchTab({ url: '/pages/booking/index' })
+  }
 })

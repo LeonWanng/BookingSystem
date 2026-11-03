@@ -11,9 +11,29 @@ Page({
   onLoad(o) {
     const currentRole = wx.getStorageSync('demoRole') || '管理员'
     const appointments = currentRole === '家长' ? parentSeed : currentRole === '老师' ? teacherSeed : seed
-    this.setData({ mode:o.mode || '', filter:o.filter || 'all', currentRole, appointments })
-    this.refreshList(appointments, o.filter || 'all')
+    const filter = o.filter || wx.getStorageSync('bookingFilter') || 'all'
+    const mode = o.mode || wx.getStorageSync('bookingMode') || ''
+    this.setData({ mode, filter, currentRole, appointments })
+    this.refreshList(appointments, filter)
     this.loadAppointments()
+  },
+  onShow() {
+    this.syncTabBar(1)
+    const currentRole = wx.getStorageSync('demoRole') || '管理员'
+    const filter = wx.getStorageSync('bookingFilter') || this.data.filter || 'all'
+    const mode = wx.getStorageSync('bookingMode') || ''
+    if (currentRole === this.data.currentRole && filter === this.data.filter && mode === this.data.mode) return
+    const appointments = currentRole === '家长' ? parentSeed : currentRole === '老师' ? teacherSeed : seed
+    const nextAppointments = currentRole === this.data.currentRole ? this.data.appointments : appointments
+    this.setData({ currentRole, mode, appointments: nextAppointments })
+    this.refreshList(nextAppointments, filter)
+  },
+  syncTabBar(selected) {
+    const tabBar = this.getTabBar && this.getTabBar()
+    if (tabBar) {
+      tabBar.refreshRole()
+      tabBar.setSelected(selected)
+    }
   },
   refreshList(appointments, filter) {
     const displayAppointments = filter === 'all' ? appointments : appointments.filter(item => {
@@ -58,6 +78,6 @@ Page({
   confirmBooking(e) { this.update(e.currentTarget.dataset.id, '已确认', 'blue'); wx.showToast({ title:'已确认预约' }) },
   checkin(e) { this.update(e.currentTarget.dataset.id, '已到店', 'green'); wx.showToast({ title:'签到成功' }) },
   finish(e) { wx.showModal({ title:'试听记录', editable:true, placeholderText:'填写学员表现与跟进建议', success:r => { if (r.confirm) { this.update(e.currentTarget.dataset.id, '已完成', 'gray'); wx.showToast({ title:'记录已保存' }) } } }) },
-  goHome() { wx.navigateBack({ delta:1 }) },
-  goAdmin() { wx.navigateTo({ url:'/pages/admin/index' }) }
+  goHome() { wx.switchTab({ url:'/pages/index/index' }) },
+  goAdmin() { wx.switchTab({ url:'/pages/admin/index' }) }
 })
